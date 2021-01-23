@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,10 +35,22 @@ public class DemoController {
         }
     }
 
+    private static volatile int latencyBase = 0;
+
     @RequestMapping(method = RequestMethod.GET, value = "/get", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public Mono<List<Integer>> get(final ServerWebExchange serverWebExchange) {
         return getResponse(serverWebExchange);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/injectLatency")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<String> injectLatency(@RequestParam(name="duration") final int duration,
+                                      @RequestParam(name="latency") final int latency) {
+        latencyBase = latency;
+        return Mono.just(String.format("Latency of %s milliseconds injected for %s milliseconds!", latency, duration))
+                   .delayElement(Duration.ofMillis(duration))
+                   .doFinally((s) -> latencyBase = 0);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/post_error", consumes = "application/json", produces = "application/json")
@@ -66,7 +79,7 @@ public class DemoController {
 
     private Mono<List<Integer>> getResponse(final ServerWebExchange serverWebExchange) {
         final String logPrefix = serverWebExchange.getLogPrefix();
-        final int delayMillis = ThreadLocalRandom.current().nextInt(10);
+        final int delayMillis = ThreadLocalRandom.current().nextInt(10) + latencyBase;
         final int intListSize = ThreadLocalRandom.current().nextInt(MAX_INT_LIST_SIZE);
         logger.info(String.format("%sController called. Delay: %d. Size: %d", logPrefix, delayMillis, intListSize));
         return Mono.fromFuture(CompletableFuture.supplyAsync(() -> this.getIntList(intListSize)))
