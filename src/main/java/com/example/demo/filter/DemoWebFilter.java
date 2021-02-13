@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class DemoWebFilter implements WebFilter {
 
-    static final Duration TIMEOUT_DURATION = Duration.ofMillis(10000);
+    static final Duration TIMEOUT_DURATION = Duration.ofMillis(60000);
 
     static final HttpStatus RESPONSE_TIMEOUT_HTTP_STATUS = HttpStatus.INTERNAL_SERVER_ERROR;
 

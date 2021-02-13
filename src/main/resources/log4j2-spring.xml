@@ -26,12 +26,13 @@
  
     <Loggers>
         <!-- LOG everything at INFO level -->
-        <Root level="fatal">
+        <Root level="warn">
             <!-- <AppenderRef ref="Console" /> -->
             <AppenderRef ref="RollingFile" />
         </Root>
  
         <Logger name="com.example.demo.filter" level="trace"></Logger>
+        <Logger name="com.example.demo.controller" level="trace"></Logger>
         <!-- <Logger name="_org.springframework.http.server.reactive" level="trace"></Logger> -->
         <!-- <Logger name="org.springframework.http.server.reactive" level="trace"></Logger> -->
     </Loggers>
