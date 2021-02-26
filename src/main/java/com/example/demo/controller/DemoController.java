@@ -79,10 +79,10 @@ public class DemoController {
 
     private Mono<List<Integer>> getResponse(final ServerWebExchange serverWebExchange) {
         final String logPrefix = serverWebExchange.getLogPrefix();
-        final int delayMillis = 6; //ThreadLocalRandom.current().nextInt(10) + latencyBase;
-        final int intListSize = 30519; //ThreadLocalRandom.current().nextInt(MAX_INT_LIST_SIZE);
-        // final int delayMillis = ThreadLocalRandom.current().nextInt(10) + latencyBase;
-        // final int intListSize = ThreadLocalRandom.current().nextInt(MAX_INT_LIST_SIZE);
+        // final int delayMillis = 6; //ThreadLocalRandom.current().nextInt(10) + latencyBase;
+        // final int intListSize = 30519; //ThreadLocalRandom.current().nextInt(MAX_INT_LIST_SIZE);
+        final int delayMillis = ThreadLocalRandom.current().nextInt(10) + latencyBase;
+        final int intListSize = ThreadLocalRandom.current().nextInt(MAX_INT_LIST_SIZE);
         logger.info(String.format("%sController called. Delay: %d. Size: %d", logPrefix, delayMillis, intListSize));
         return Mono.fromFuture(CompletableFuture.supplyAsync(() -> this.getIntList(intListSize)))
             .delayElement(Duration.ofMillis(delayMillis))
